@@ -18,6 +18,10 @@ import java.util.logging.Logger;
  */
 public class Calcule {
     private static Logger log;
+    
+    public Calcule() throws Exception {
+        this.log = Logs.getInstance().getLogger();
+    }
 
     /**
      * Responsável por realizar o cálculo das cotações das moedas
@@ -30,7 +34,6 @@ public class Calcule {
      */
     public BigDecimal currencyQuotation(String from, String to, Number value, String quotation) throws Exception {
         BigDecimal retVal = new BigDecimal("0");
-        log = Logs.getInstance().getLogger();
 
         CurrencyQuotationFile currencyQuotationFile = new CurrencyQuotationFile();
         
@@ -53,14 +56,14 @@ public class Calcule {
     }
 
     /**
-     * Valida a data passada
+     * Valida os dados de entrada passada
      * @param from
      * @param to
      * @param value
      * @param nameCurrencyList
      * @throws Exception 
      */
-    public static void dataValidate(String from, String to, Number value, List<String> nameCurrencyList) throws Exception {
+    protected void dataValidate(String from, String to, Number value, List<String> nameCurrencyList) throws Exception {
         String errorMsg = "";
         Boolean hasError = false;
         
@@ -99,7 +102,7 @@ public class Calcule {
      * @param currencyList
      * @return BigDecimal
      */
-    private BigDecimal quotationCalcule(String from, String to, Number value, List<Currency> currencyList) {
+    protected BigDecimal quotationCalcule(String from, String to, Number value, List<Currency> currencyList) {
         log.info("Calcula cotacao das moedas");
         log.info("De " + from +" ====> Para " + to);
 
@@ -112,7 +115,7 @@ public class Calcule {
         BigDecimal valFrom = fromCurr.getPurchaseValue();
         BigDecimal valTo = toCurr.getPurchaseValue();
 
-        switch(fromCurr.getType()) {
+        switch(toCurr.getType()) {
             case "A":
                 log.info("Moeda destino do tipo A");
                 retVal = valFrom.divide(valTo, RoundingMode.HALF_EVEN);
@@ -138,7 +141,7 @@ public class Calcule {
      * @param currencyName
      * @return Currency
      */
-    private Currency getCurrencyFromList(List<Currency> currencyList, String currencyName) {
+    protected Currency getCurrencyFromList(List<Currency> currencyList, String currencyName) {
         log.info("Busca moeda na lista de moedas");
         Currency retVal = null;
         

@@ -29,16 +29,15 @@ import java.util.logging.Logger;
  * @author ulisses.fernandes
  */
 public class CurrencyQuotationFile {
-
-    private final String URL_TO_DOWNLOAD = "http://www4.bcb.gov.br/Download/fechamento/%s.csv";
     private final String LIMITER = ";";
     private List<Currency> currencyList;
     private List<String> nameCurrencyList;
     private static Logger log;
 
-    public CurrencyQuotationFile() {
+    public CurrencyQuotationFile() throws Exception {
         this.currencyList = new ArrayList<Currency>();
         this.nameCurrencyList = new ArrayList<String>();
+        this.log = Logs.getInstance().getLogger();
     }
 
     public List<Currency> getCurrentyList() {
@@ -54,28 +53,29 @@ public class CurrencyQuotationFile {
      * @param quotation
      * @throws Exception 
      */
-    public void loadCurrencyFile(String quotation) throws Exception {
-        log = Logs.getInstance().getLogger();
+    public void loadCurrencyFile(String dateQuotation) throws Exception {
         Properties props = ConfigProperties.getInstance().loadConfigProperties();
-        String userDir = props.getProperty("user.dir");
+        String currencyFileDir = props.getProperty("currencyFile.dir");
 
-        File currencyDir = new File(userDir);
+        File currencyDir = new File(currencyFileDir);
         if (!currencyDir.exists()) {
-            new File(userDir).mkdirs();
+            new File(currencyFileDir).mkdirs();
         }
 
-        File currencyFile = getQuotationFile(quotation, currencyDir);
-        String fileName = getQuotationFileName(quotation);
+        File currencyFile = getQuotationFile(dateQuotation, currencyDir);
+        String fileName = getQuotationFileName(dateQuotation);
+        String urlToDownload = props.getProperty("url.download");
+        String fileExtension = props.getProperty("file.extension");
 
         if (Boolean.FALSE.equals(currencyFile.exists())) {
             log.info("Necessario download do arquivo de cotacao");
-            URL url = new URL(String.format(URL_TO_DOWNLOAD, fileName));
+            URL url = new URL(String.format("%s%s%s", urlToDownload, fileName, fileExtension));
             try {
                 downloadQuotationFile(url, currencyDir.getPath());
             } catch (Exception e) {
                 throw new Exception("Download file error");
             }
-            currencyFile = getQuotationFile(quotation, currencyDir);
+            currencyFile = getQuotationFile(dateQuotation, currencyDir);
         }
 
         if (currencyFile.exists()) {
@@ -107,7 +107,7 @@ public class CurrencyQuotationFile {
      * @return File
      * @throws Exception 
      */
-    private static File getQuotationFile(String quotation, File currencyDir) throws Exception {
+    protected File getQuotationFile(String quotation, File currencyDir) throws Exception {
         File currencyFile = new File("");
         String fileName = getQuotationFileName(quotation);
 
@@ -128,14 +128,14 @@ public class CurrencyQuotationFile {
      * @throws ParseException
      * @throws Exception 
      */
-    private static String getQuotationFileName(String quotation) throws ParseException, Exception {
+    protected String getQuotationFileName(String dateQuotation) throws ParseException, Exception {
         String fileName = "";
 
         SimpleDateFormat dateFormatIn = new SimpleDateFormat("dd/MM/yyyy");
         Calendar calendar = Calendar.getInstance();
         try {
             dateFormatIn.setLenient(false);
-            calendar.setTime(dateFormatIn.parse(quotation));
+            calendar.setTime(dateFormatIn.parse(dateQuotation));
         } catch (ParseException e) {
             throw new Exception("Incorrect date");
         }
@@ -155,7 +155,7 @@ public class CurrencyQuotationFile {
      * @throws FileNotFoundException
      * @throws IOException 
      */
-    private void downloadQuotationFile(URL url, String targetPath) throws FileNotFoundException, IOException {
+    protected void downloadQuotationFile(URL url, String targetPath) throws FileNotFoundException, IOException {
         InputStream is = url.openStream();
         FileOutputStream fos = new FileOutputStream(targetPath);
 
@@ -174,7 +174,7 @@ public class CurrencyQuotationFile {
      * @param date
      * @return Calendar
      */
-    private static Calendar verifyBusinessDay(Calendar date) {
+    protected Calendar verifyBusinessDay(Calendar date) {
         SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
         log.info("Verifica dia da semana");
         if (date.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {

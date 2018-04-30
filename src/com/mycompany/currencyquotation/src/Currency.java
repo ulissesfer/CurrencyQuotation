@@ -69,8 +69,5 @@ public class Currency {
     public BigDecimal getSaleValue() {
         return saleValue;
     }
-    
-    public static void main(String[] args) throws Exception {
-        System.out.println("Cotação: " + new Calcule().currencyQuotation("USD", "EUR", 2, "25/04/2018"));
-    }
+
 }
