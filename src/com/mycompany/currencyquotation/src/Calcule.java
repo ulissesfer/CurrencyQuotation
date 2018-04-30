@@ -28,18 +28,18 @@ public class Calcule {
      * @param from
      * @param to
      * @param value
-     * @param quotation
+     * @param dateQuotation
      * @return BigDecimal
      * @throws Exception 
      */
-    public BigDecimal currencyQuotation(String from, String to, Number value, String quotation) throws Exception {
+    public BigDecimal currencyQuotation(String from, String to, Number value, String dateQuotation) throws Exception {
         BigDecimal retVal = new BigDecimal("0");
 
         CurrencyQuotationFile currencyQuotationFile = new CurrencyQuotationFile();
         
         try {
             log.info("Carrega arquivo de cotacoes");
-            currencyQuotationFile.loadCurrencyFile(quotation);
+            currencyQuotationFile.loadCurrencyFile(dateQuotation);
         } catch (Exception e) {
             log.warning(e.getMessage());
             e.printStackTrace();

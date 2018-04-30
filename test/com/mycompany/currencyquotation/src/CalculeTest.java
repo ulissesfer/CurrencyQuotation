@@ -5,9 +5,12 @@
  */
 package com.mycompany.currencyquotation.src;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -128,5 +131,11 @@ public class CalculeTest {
         BigDecimal expected = calcule.currencyQuotation(currEur.getName(), currUsd.getName(), 2, "27/04/2018");
 
         Assert.assertTrue(expected != BigDecimal.ZERO);
+
+        Properties props = ConfigProperties.getInstance().loadConfigProperties();
+        String currencyFileDir = props.getProperty("currencyFile.dir");
+        String fileExtension = props.getProperty("file.extension");
+        File file = new File(String.format("%s%s%s", currencyFileDir, "20180427", fileExtension));
+        file.delete();
     }
 }

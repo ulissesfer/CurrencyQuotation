@@ -7,6 +7,7 @@ package com.mycompany.currencyquotation.src;
 
 import java.io.File;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Properties;
 import org.junit.After;
@@ -41,9 +42,6 @@ public class CurrencyQuotationFileTest {
     public void tearDown() {
     }
 
-    // TODO add test methods here.
-    // The methods must be annotated with annotation @Test. For example:
-    //
     @Test
     public void checkBusinessDayTest() throws Exception {
         CurrencyQuotationFile currencyQuotationFile = new CurrencyQuotationFile();
@@ -66,20 +64,24 @@ public class CurrencyQuotationFileTest {
         CurrencyQuotationFile currencyQuotationFile = new CurrencyQuotationFile();
         Properties props = ConfigProperties.getInstance().loadConfigProperties();
         String currencyFileDir = props.getProperty("currencyFile.dir");
-
+        
         String urlToDownload = props.getProperty("url.download");
+
         String fileName = "20180424";
         String fileExtension = props.getProperty("file.extension");
+        String destinationFile = String.format("%s%s%s", currencyFileDir, fileName, fileExtension);
 
-        File currencyDir = new File(currencyFileDir);
+        File currencyDir = new File(destinationFile);
 
         URL url = new URL(String.format("%s%s%s", urlToDownload, fileName, fileExtension));
 
         currencyQuotationFile.downloadQuotationFile(url, currencyDir.getPath());
 
-        File file = currencyQuotationFile.getQuotationFile(fileName, new File(currencyFileDir));
+        File file = currencyQuotationFile.getQuotationFile("24/04/2018", new File(currencyFileDir));
 
         Assert.assertTrue(file != null);
+        
+        boolean success = (new File(destinationFile)).delete();
     }
 
     @Test
@@ -101,5 +103,11 @@ public class CurrencyQuotationFileTest {
         
         Assert.assertTrue(!currencyQuotationFile.getCurrentyList().isEmpty());
         Assert.assertTrue(!currencyQuotationFile.getCurrencyNameList().isEmpty());
+        
+        Properties props = ConfigProperties.getInstance().loadConfigProperties();
+        String currencyFileDir = props.getProperty("currencyFile.dir");
+        String fileExtension = props.getProperty("file.extension");
+        File file = new File(String.format("%s%s%s", currencyFileDir, "20180424", fileExtension));
+        file.delete();
     }
 }

@@ -50,7 +50,7 @@ public class CurrencyQuotationFile {
 
     /**
      * Realiza a leitura do arquivo de moedas
-     * @param quotation
+     * @param dateQuotation
      * @throws Exception 
      */
     public void loadCurrencyFile(String dateQuotation) throws Exception {
@@ -70,8 +70,9 @@ public class CurrencyQuotationFile {
         if (Boolean.FALSE.equals(currencyFile.exists())) {
             log.info("Necessario download do arquivo de cotacao");
             URL url = new URL(String.format("%s%s%s", urlToDownload, fileName, fileExtension));
+            String newFile = String.format("%s%s%s", currencyFileDir, fileName, fileExtension);
             try {
-                downloadQuotationFile(url, currencyDir.getPath());
+                downloadQuotationFile(url, newFile);
             } catch (Exception e) {
                 throw new Exception("Download file error");
             }
@@ -102,14 +103,14 @@ public class CurrencyQuotationFile {
 
     /**
      * Recupera o arquivo de cotações do diretorio especificado nas propriedades
-     * @param quotation
+     * @param dateQuotation
      * @param currencyDir
      * @return File
      * @throws Exception 
      */
-    protected File getQuotationFile(String quotation, File currencyDir) throws Exception {
+    protected File getQuotationFile(String dateQuotation, File currencyDir) throws Exception {
         File currencyFile = new File("");
-        String fileName = getQuotationFileName(quotation);
+        String fileName = getQuotationFileName(dateQuotation);
 
         File fileList[] = currencyDir.listFiles();
         for (int i = 0; i < fileList.length; i++) {
@@ -123,7 +124,7 @@ public class CurrencyQuotationFile {
 
     /**
      * Monta o nome do arquivo conforme a data passada
-     * @param quotation
+     * @param dateQuotation
      * @return String
      * @throws ParseException
      * @throws Exception 
