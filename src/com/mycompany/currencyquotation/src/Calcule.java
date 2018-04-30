@@ -115,10 +115,10 @@ public class Calcule {
         BigDecimal valFrom = fromCurr.getPurchaseValue();
         BigDecimal valTo = toCurr.getPurchaseValue();
 
-        switch(toCurr.getType()) {
+        switch(fromCurr.getType()) {
             case "A":
                 log.info("Moeda destino do tipo A");
-                retVal = valFrom.divide(valTo, RoundingMode.HALF_EVEN);
+                retVal = valFrom.divide(valTo, RoundingMode.HALF_DOWN);
                 retVal = retVal.multiply(valueQuantity);
                 break;
             case "B":
@@ -132,7 +132,7 @@ public class Calcule {
         }
 
         log.info("Valor arredondado em 2 casas decimais");
-        return retVal.setScale(2, RoundingMode.UP);
+        return retVal.setScale(2, RoundingMode.HALF_DOWN);
     }
 
     /**

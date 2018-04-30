@@ -138,4 +138,17 @@ public class CalculeTest {
         File file = new File(String.format("%s%s%s", currencyFileDir, "20180427", fileExtension));
         file.delete();
     }
+    
+    @Test
+    public void validacao() throws Exception {
+    	BigDecimal expected = calcule.currencyQuotation("USD", "EUR", 100.00, "20/11/2014");
+    	
+    	Assert.assertTrue(expected.equals(new BigDecimal("79.71")));
+    	
+    	Properties props = ConfigProperties.getInstance().loadConfigProperties();
+        String currencyFileDir = props.getProperty("currencyFile.dir");
+        String fileExtension = props.getProperty("file.extension");
+        File file = new File(String.format("%s%s%s", currencyFileDir, "20141120", fileExtension));
+        file.delete();
+    }
 }
